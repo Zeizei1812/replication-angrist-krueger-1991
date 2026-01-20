@@ -1,4 +1,3 @@
-# Code des deux graphiques corrigé : 
 library(tidyverse)
 library(ggplot2)                 
 library(readr)
@@ -87,15 +86,13 @@ p1
 p2
 
 
-# Table 5
-
 
 #Table 5 : 
-  # Step 1: Filter the dataset
+  # Step 1: Filtering the dataset
   pums %>%
   filter(cohort == "30-39") -> pums.tab5
 
-# Step 2: Define formulas for regressions
+# Step 2: Defining formulas for regressions
 # We no longer need the age variables like AGEQ and I(AGEQ^2)
 exo3 = "RACE + MARRIED + SMSA + NEWENG + MIDATL + ENOCENT +
         WNOCENT + SOATL + ESOCENT + WSOCENT + MT"
@@ -104,7 +101,7 @@ exo3 = "RACE + MARRIED + SMSA + NEWENG + MIDATL + ENOCENT +
 pums.tab5 %>%
   mutate(region = as.factor(paste(NEWENG, MIDATL, ENOCENT, WNOCENT, SOATL, ESOCENT, WSOCENT, MT, sep = "_"))) -> pums.tab6
 
-# Step 4: Create YOB_factor for Year of Birth fixed effects
+# Step 4: Creating YOB_factor for Year of Birth fixed effects
 pums.tab6 %>%
   mutate(YOB_factor = as.factor(YOB)) -> pums.tab6
 
@@ -114,7 +111,7 @@ reg3 = lm(LWKLYWGE~EDUC + AGEQ + I(AGEQ^2) + YOB_factor ,pums.tab6)
 reg5 = lm(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + YOB_factor + region, data = pums.tab6)
 reg7 = lm(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + AGEQ + I(AGEQ^2) + YOB_factor + region, data = pums.tab6)
 
-# Step 6: Create the OLS Summary Table
+# Step 6: Creating the OLS Summary Table
 stargazer(
   reg1, reg3,reg5, reg7,
   dep.var.caption = "",
@@ -133,7 +130,7 @@ stargazer(
   type = "text"
 )
 
-# Step 7: Create QOB_Year Interaction
+# Step 7: Creating QOB_Year Interaction
 pums.tab6 <- pums.tab6 %>%
   mutate(QOB_Year = paste(QOB, YOB, sep = "_"))
 
@@ -144,7 +141,7 @@ reg_IV4 <- ivreg(LWKLYWGE ~ EDUC + AGEQ +  I(AGEQ^2) + YOB_factor  |
 reg_IV6 <- ivreg(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + YOB_factor + region | QOB_Year + factor(RACE) + factor(SMSA) + factor(MARRIED) + YOB_factor + region, data = pums.tab6)
 reg_IV8 <- ivreg(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + YOB_factor + AGEQ +  I(AGEQ^2) + region | QOB_Year + factor(RACE) + factor(SMSA) + factor(MARRIED) + YOB_factor + region, data = pums.tab6)
 
-# Step 9: Create the TSLS Summary Table
+# Step 9: Creating the TSLS Summary Table
 stargazer(
   reg_IV2,reg_IV4, reg_IV6, reg_IV8,
   dep.var.caption = "",
@@ -163,7 +160,7 @@ stargazer(
   type = "text"
 )
 
-# Step 10: Combine OLS and TSLS Results into One Table
+# Step 10: Combining OLS and TSLS Results into One Table
 stargazer(
   reg1, reg_IV2, reg3, reg_IV4, reg5, reg_IV6, reg7, reg_IV8,
   dep.var.caption = "",
@@ -210,7 +207,7 @@ mean_ln_wage_q2_4 <- mean(pums.tab5$LWKLYWGE[pums.tab5$wald_dum == 1], na.rm = T
 mean_education_q1 <- mean(pums.tab5$EDUC[pums.tab5$QOB == 1], na.rm = TRUE)
 mean_education_q2_4 <- mean(pums.tab5$EDUC[pums.tab5$wald_dum == 1], na.rm = TRUE)
 
-# Calcul de l'estimateur de Wald
+# Calculating Wald estimator
 wald_estimator <- (mean_ln_wage_q1 - mean_ln_wage_q2_4) / (mean_education_q1 - mean_education_q2_4)
 
 # Régression OLS pour le retour de l'éducation
@@ -227,7 +224,7 @@ data3 <- data.frame(
                 "Difference (std. error) (1)-(2)")
 )
 
-# Afficher le tableau final avec stargazer
+# Displaying the final table with stargazer
 stargazer(data3,
           title = "Panel B: Wald Estimates for 1980 Census-Men Born 1930-1939",
           type = "text",
@@ -240,33 +237,32 @@ stargazer(data3,
 
 ####################
 # Test 1
-# Charger les bibliothèques nécessaires
 library(dplyr)
 library(AER)
 library(stargazer)
 
-# Étape 1 : Filtrer le jeu de données
+# Step 1 : Filtering the database
 pums %>%
   filter(cohort == "30-39") -> pums.tab5
 
-# Étape 2 : Créer une variable région et YOB_factor
+# Step 2 : Creating a region and YOB_factor variable
 pums.tab5 %>%
   mutate(
     region = as.factor(paste(NEWENG, MIDATL, ENOCENT, WNOCENT, SOATL, ESOCENT, WSOCENT, MT, sep = "_")),
     YOB_factor = as.factor(YOB)
   ) -> pums.tab6
 
-# Étape 3 : Créer une interaction QOB_Year
+# Step 3 : Creating an interaction QOB_Year
 pums.tab6 <- pums.tab6 %>%
   mutate(QOB_Year = paste(QOB, YOB, sep = "_"))
 
-# Étape 4 : Régressions OLS
+# Step 4 : Regressions OLS
 reg1 <- lm(LWKLYWGE ~ EDUC + YOB_factor, data = pums.tab6)
 reg3 <- lm(LWKLYWGE ~ EDUC + AGEQ + I(AGEQ^2) + YOB_factor, data = pums.tab6)
 reg5 <- lm(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + YOB_factor + region, data = pums.tab6)
 reg7 <- lm(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + AGEQ + I(AGEQ^2) + YOB_factor + region, data = pums.tab6)
 
-# Étape 5 : Régressions TSLS
+# Step 5 : Regressions TSLS
 reg_IV2 <- ivreg(LWKLYWGE ~ EDUC + YOB_factor | QOB_Year + YOB_factor, data = pums.tab6)
 reg_IV4 <- ivreg(LWKLYWGE ~ EDUC + AGEQ + I(AGEQ^2) + YOB_factor |
                    QOB_Year + AGEQ + I(AGEQ^2) + YOB_factor, data = pums.tab6)
@@ -275,7 +271,7 @@ reg_IV6 <- ivreg(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED)
 reg_IV8 <- ivreg(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + AGEQ + I(AGEQ^2) + YOB_factor + region |
                    QOB_Year + factor(RACE) + factor(SMSA) + factor(MARRIED) + AGEQ + I(AGEQ^2) + YOB_factor + region, data = pums.tab6)
 
-# Étape 6 : Combiner OLS et TSLS dans un tableau unique
+# Step 6 : Combining OLS and TSLS 
 stargazer(
   reg1, reg_IV2, reg3, reg_IV4, reg5, reg_IV6, reg7, reg_IV8,
   dep.var.caption = "",
@@ -304,33 +300,30 @@ stargazer(
 )
 ###############################
 # Test 2 
-# Charger les bibliothèques nécessaires
 library(dplyr)
 library(AER)
 library(stargazer)
 
-# Étape 1 : Filtrer le jeu de données
+
 pums %>%
   filter(cohort == "30-39") -> pums.tab5
 
-# Étape 2 : Créer une variable région et YOB_factor
 pums.tab5 %>%
   mutate(
     region = as.factor(paste(NEWENG, MIDATL, ENOCENT, WNOCENT, SOATL, ESOCENT, WSOCENT, MT, sep = "_")),
     YOB_factor = as.factor(YOB)
   ) -> pums.tab6
 
-# Étape 3 : Créer une interaction QOB_Year
+
 pums.tab6 <- pums.tab6 %>%
   mutate(QOB_Year = paste(QOB, YOB, sep = "_"))
 
-# Étape 4 : Régressions OLS
 reg1 <- lm(LWKLYWGE ~ EDUC + YOB_factor, data = pums.tab6)
 reg3 <- lm(LWKLYWGE ~ EDUC + AGEQ + I(AGEQ^2) + YOB_factor, data = pums.tab6)
 reg5 <- lm(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + YOB_factor + region, data = pums.tab6)
 reg7 <- lm(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + AGEQ + I(AGEQ^2) + YOB_factor + region, data = pums.tab6)
 
-# Étape 5 : Régressions TSLS
+
 reg_IV2 <- ivreg(LWKLYWGE ~ EDUC + YOB_factor | QOB_Year + YOB_factor, data = pums.tab6)
 reg_IV4 <- ivreg(LWKLYWGE ~ EDUC + AGEQ + I(AGEQ^2) + YOB_factor |
                    QOB_Year + AGEQ + I(AGEQ^2) + YOB_factor, data = pums.tab6)
@@ -339,13 +332,13 @@ reg_IV6 <- ivreg(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED)
 reg_IV8 <- ivreg(LWKLYWGE ~ EDUC + factor(RACE) + factor(SMSA) + factor(MARRIED) + AGEQ + I(AGEQ^2) + YOB_factor + region |
                    QOB_Year + factor(RACE) + factor(SMSA) + factor(MARRIED) + AGEQ + I(AGEQ^2) + YOB_factor + region, data = pums.tab6)
 
-# Étape 6 : Récupérer les valeurs Chi² pour les régressions TSLS
+#  Chi² values for TSLS regressions
 chi2_IV2 <- summary(reg_IV2)$waldtest["chi-squared"] # Chi² pour reg_IV2
 chi2_IV4 <- summary(reg_IV4)$waldtest["chi-squared"] # Chi² pour reg_IV4
 chi2_IV6 <- summary(reg_IV6)$waldtest["chi-squared"] # Chi² pour reg_IV6
 chi2_IV8 <- summary(reg_IV8)$waldtest["chi-squared"] # Chi² pour reg_IV8
 
-# Étape 7 : Combiner OLS et TSLS dans un tableau unique
+
 stargazer(
   reg1, reg_IV2, reg3, reg_IV4, reg5, reg_IV6, reg7, reg_IV8,
   dep.var.caption = "Log Weekly Wage",
